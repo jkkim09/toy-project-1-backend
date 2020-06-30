@@ -1,14 +1,19 @@
 package com.toyproject.backend.config;
 
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
@@ -33,29 +38,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                // 페이지 권한 설정
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/myinfo").hasRole("MEMBER")
-                .antMatchers("/**").permitAll()
-                .antMatchers("/api/user/**/**").permitAll()
+        http.authorizeRequests() //  // 페이지 권한 설정     
+        	.antMatchers("/api/user/**/**").permitAll()
+            .antMatchers("/admin/**").hasRole("ADMIN")
+            .antMatchers("/user/myinfo").hasRole("MEMBER")
             .and() // 로그인 설정
-                                .formLogin()
-                .loginPage("/user/login")
-                .defaultSuccessUrl("/user/login/result")
-                .permitAll()
+            .formLogin()
+            .loginPage("/user/login")
+            .defaultSuccessUrl("/user/login/result").permitAll()
             .and() // 로그아웃 설정
-                               .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                .logoutSuccessUrl("/user/logout/result")
-                .invalidateHttpSession(true)
+            .logout()
+            .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
+            .logoutSuccessUrl("/user/logout/result")
+            .invalidateHttpSession(true)
             .and()
-                // 403 예외처리 핸들링
-                               .exceptionHandling().accessDeniedPage("/user/denied");
+            .exceptionHandling().accessDeniedPage("/user/denied"); // // 403 예외처리 핸들링
     }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(memberService).passwordEncoder(passwordEncoder());
+    
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository(
+      @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String kakaoClientId,
+      @Value("${spring.security.oauth2.client.registration.kakao.client-secret}") String kakaoClientSecret) {
+    	ArrayList<ClientRegistration> registrations = new ArrayList<>();
+    	registrations.add(CustomOAuth2Provider.KAKAO.getBuilder("kakao").clientId(kakaoClientId).clientSecret(kakaoClientSecret).jwkSetUri("temp").build());
+		return new InMemoryClientRegistrationRepository(registrations);
     }
 }
