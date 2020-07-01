@@ -1,98 +1,114 @@
 package com.toyproject.backend.config;
 
-import static com.toyproject.backend.enums.SocialType.KAKAO;
-
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import javax.annotation.Resource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-
-import com.toyproject.backend.service.CustomOAuth2UserService;
-
-import lombok.AllArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//    private MemberService memberService;		
+	@Resource
+    private Environment env;
+
+    private static String CLIENT_PROPERTY_KEY= "spring.security.oauth2.client.registration.";
+    private static List<String> clients = Arrays.asList("kakao");
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        List<ClientRegistration> registrations = clients.stream()
+                .map(c -> getRegistration(c))
+                .filter(registration -> registration != null)
+                .collect(Collectors.toList());
+        return new InMemoryClientRegistrationRepository(registrations);
+    }
+
+    private ClientRegistration getRegistration(String client){
+    	System.out.println("getRegistration");
+    	
+        // API Client Id 불러오기
+        String clientId = env.getProperty(
+                CLIENT_PROPERTY_KEY + client + ".client-id");
+
+        // API Client Id 값이 존재하는지 확인하기
+        if (clientId == null) {
+            return null;
+        }
+
+        // API Client Secret 불러오기
+        String clientSecret = env.getProperty(
+                CLIENT_PROPERTY_KEY + client + ".client-secret");
+        
+        System.out.println(clientId + "  ,  " + clientSecret);
+        
+        if (client.equals("google")) {
+            return CustomOAuth2Provider.GOOGLE.getBuilder(client)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        }
+
+        if (client.equals("facebook")) {
+            return CustomOAuth2Provider.FACEBOOK.getBuilder(client)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        }
+
+        if (client.equals("github")) {
+            return CustomOAuth2Provider.GITHUB.getBuilder(client)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        }
+
+        if (client.equals("kakao")) {
+        	System.out.println("getRegistration----Kakao : " + clientId + "  ,  " + clientSecret);
+            return CustomOAuth2Provider.KAKAO.getBuilder(client)
+            		.clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        }
+
+        if (client.equals("naver")) {
+            return CustomOAuth2Provider.NAVER.getBuilder(client)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        }
+
+        return null;
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception
-    {
-        // static 디렉터리의 하위 파일 목록은 인증 무시 ( = 항상통과 )
-        web.ignoring().antMatchers("/css/**", "/js/**", "/img/**", "/lib/**");
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/login")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .oauth2Login()
+                .loginPage("/login")
+                .clientRegistrationRepository(clientRegistrationRepository())
+                .authorizedClientService(authorizedClientService());
     }
 
-    @Override public void configure(HttpSecurity httpSecurity) throws Exception { 
-    	httpSecurity.authorizeRequests()
-	    	.antMatchers("/", "/oauth2/**", "/login/**", "/css/**", "/images/**", "/js/**", "/console/**", "/favicon.ico/**").permitAll()
-	    	.antMatchers("/kakao").hasAuthority(KAKAO.getRoleType())
-	    	.anyRequest().authenticated()
-	    	.and()
-	    	.oauth2Login()
-	    	.userInfoEndpoint().userService(new CustomOAuth2UserService()) // 네이버 USER INFO의 응답을 처리하기 위한 설정 
-    	.and()
-	    	.defaultSuccessUrl("/loginSuccess")
-	    	.failureUrl("/loginFailure")
-    	.and()
-	    	.exceptionHandling()
-	    	.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+    @Bean
+    public OAuth2AuthorizedClientService authorizedClientService() {
+        return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository());
     }
- 
-
-    
-	@Bean
-	public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties,
-			@Value("${spring.security.oauth2.client.registration.kakao.client-id}") String kakaoClientId,
-			@Value("${spring.security.oauth2.client.registration.kakao.client-secret}") String kakaoClientSecret) {
-		List<ClientRegistration> registrations = oAuth2ClientProperties.getRegistration().keySet().stream()
-				.map(client -> getRegistration(oAuth2ClientProperties, client)).filter(Objects::nonNull)
-				.collect(Collectors.toList());
-		
-		registrations.add(CustomOAuth2Provider.KAKAO.getBuilder("kakao")
-				.clientId(kakaoClientId)
-				.clientSecret(kakaoClientSecret).jwkSetUri("temp").build());
-		
-//		registrations.add(CustomOAuth2Provider.NAVER.getBuilder("naver")
-//				.clientId(naverClientId)
-//				.clientSecret(naverClientSecret).jwkSetUri("temp").build());
-		
-		return new InMemoryClientRegistrationRepository(registrations);
-	}
-
-	private ClientRegistration getRegistration(OAuth2ClientProperties clientProperties, String client) {
-		if ("google".equals(client)) {
-			OAuth2ClientProperties.Registration registration = clientProperties.getRegistration().get("google");
-			return CommonOAuth2Provider.GOOGLE.getBuilder(client).clientId(registration.getClientId())
-					.clientSecret(registration.getClientSecret()).scope("email", "profile").build();
-		}
-		if ("facebook".equals(client)) {
-			OAuth2ClientProperties.Registration registration = clientProperties.getRegistration().get("facebook");
-			return CommonOAuth2Provider.FACEBOOK.getBuilder(client).clientId(registration.getClientId())
-					.clientSecret(registration.getClientSecret())
-					.userInfoUri("https://graph.facebook.com/me?fields=id,name,email,link").scope("email").build();
-		}
-		return null;
-	}
 }

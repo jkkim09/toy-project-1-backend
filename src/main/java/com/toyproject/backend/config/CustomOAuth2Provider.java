@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 public enum CustomOAuth2Provider {
-	NAVER {
+    NAVER {
 
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
@@ -87,7 +87,7 @@ public enum CustomOAuth2Provider {
         }
     };
 
-    private static final String DEFAULT_REDIRECT_URL = "{baseUrl}/login/oauth2/code/{registrationId}";
+    private static final String DEFAULT_REDIRECT_URL = "{baseUrl}/{action}/oauth2/code/{registrationId}";
 
     protected final ClientRegistration.Builder getBuilder(String registrationId,
                                                           ClientAuthenticationMethod method, String redirectUri) {
