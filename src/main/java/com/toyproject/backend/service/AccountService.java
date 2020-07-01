@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.toyproject.backend.entity.UserInfo;
 import com.toyproject.backend.repository.AccountRepository;
+import com.toyproject.backend.repository.UserRepository;
 import com.toyproject.backend.vo.Account;
 
 
@@ -23,9 +25,18 @@ public class AccountService implements UserDetailsService{
 	private AccountRepository repository;
 	
 	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	public Account save(Account account) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setAuthority(account.getAuthority());
+		userInfo.setEmail(account.getEmail());
+		userInfo.setPassword(account.getPassword());
+		userRepository.save(userInfo);
+		
 		return repository.save(account);
 	}
 	

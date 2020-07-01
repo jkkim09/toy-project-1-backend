@@ -30,7 +30,6 @@ public class UserController {
 		accountService.loadUserByUsername("test@gmail.com");
 	}
 	
-	
 	@RequestMapping("/login/kakao")
 	public void kakaoLogin() {
 		System.out.println("login/kakao");
