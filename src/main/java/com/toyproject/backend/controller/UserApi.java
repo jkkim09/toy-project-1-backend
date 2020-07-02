@@ -61,7 +61,6 @@ public class UserApi {
 	public String kakao(Principal principal) {
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
 		System.out.println("loginSuccess kakao --> " + principal.toString());
-		System.out.println(user.getEmail());
 		return "kakao";
 	}
 	

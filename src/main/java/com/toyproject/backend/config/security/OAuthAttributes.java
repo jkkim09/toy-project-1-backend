@@ -32,7 +32,6 @@ public class OAuthAttributes {
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
     	OAuthAttributes returnOAuth;
-    	System.out.println(registrationId);
     	switch(registrationId) {
     		case "kakao":
     			returnOAuth = ofKakao(userNameAttributeName, attributes);
