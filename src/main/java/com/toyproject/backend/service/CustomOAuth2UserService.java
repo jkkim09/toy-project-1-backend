@@ -43,6 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private RestOperations restOperations;
 
     public CustomOAuth2UserService() {
+    	System.out.println("test CustomOAuth2UserService");
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         this.restOperations = restTemplate;

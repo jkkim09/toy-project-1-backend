@@ -1,4 +1,4 @@
-package com.toyproject.backend.enums;
+package com.toyproject.backend.config.security;
 
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
