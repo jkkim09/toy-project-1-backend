@@ -1,14 +1,14 @@
 package com.toyproject.backend.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
+import java.security.Principal;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin("*")
 @RestController
-@RequestMapping("/")
-public class OAuth2Controller {
+public class UserApi {
 	@GetMapping({ "", "/" })
 	public String getAuthorizationMessage() {
 		return "home";
@@ -20,7 +20,13 @@ public class OAuth2Controller {
 	}
 
 	@GetMapping({ "/loginSuccess", "/hello" })
-	public String loginSuccess() {
+	public String loginSuccess(Principal principal) {
+		System.out.println(principal.toString());
+		return "loginSuccess";
+	}
+	
+	@GetMapping("/hello")
+	public String hello() {
 		return "hello";
 	}
 
