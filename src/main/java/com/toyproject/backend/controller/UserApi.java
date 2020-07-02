@@ -1,41 +1,37 @@
 package com.toyproject.backend.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ResolvableType;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.ui.Model;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserApi {
-    private static String authorizationRequestBaseUri = "oauth2/authorization";
-    Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
+	@GetMapping({ "", "/" })
+	public String getAuthorizationMessage() {
+		return "home";
+	}
 
-    @Autowired
-    private ClientRegistrationRepository clientRegistrationRepository;
+	@GetMapping("/login")
+	public String login() {
+		return "login";
+	}
 
-    @GetMapping("/login")
-    public Map getLoginLink(Model model) {
-        Iterable<ClientRegistration> clientRegistrations = null;
+	@GetMapping({ "/loginSuccess", "/hello" })
+	public String loginSuccess(Principal principal) {
+		System.out.println(principal.toString());
+		return "loginSuccess";
+	}
+	
+	@GetMapping("/hello")
+	public String hello() {
+		return "hello";
+	}
 
-        ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository)
-                .as(Iterable.class);
-
-        if (type != ResolvableType.NONE &&
-                ClientRegistration.class.isAssignableFrom(type.resolveGenerics()[0])) {
-            clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
-        }
-
-        clientRegistrations.forEach(registration ->
-                oauth2AuthenticationUrls.put(registration.getClientName(),
-                        authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
-        model.addAttribute("urls", oauth2AuthenticationUrls);
-
-        return oauth2AuthenticationUrls;
-    }
+	@GetMapping("/loginFailure")
+	public String loginFailure() {
+		return "loginFailure";
+	}
 }
