@@ -1,9 +1,9 @@
-package com.toyproject.backend.config;
+package com.toyproject.backend.config.security;
 
-import static com.toyproject.backend.enums.SocialType.FACEBOOK;
-import static com.toyproject.backend.enums.SocialType.GOOGLE;
-import static com.toyproject.backend.enums.SocialType.KAKAO;
-import static com.toyproject.backend.enums.SocialType.NAVER;
+import static com.toyproject.backend.config.security.SocialType.FACEBOOK;
+import static com.toyproject.backend.config.security.SocialType.GOOGLE;
+import static com.toyproject.backend.config.security.SocialType.KAKAO;
+import static com.toyproject.backend.config.security.SocialType.NAVER;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,17 +21,20 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import com.toyproject.backend.enums.CustomOAuth2Provider;
 import com.toyproject.backend.service.CustomOAuth2UserService;
 
-@Configuration
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+	
+	private final CustomOAuth2UserService customOAuth2UserService;
+	
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                    .antMatchers("/", "/oauth2/**", "/login/**", "/css/**",
+                    .antMatchers("/", "/test", "/oauth2/**", "/login/**", "/css/**",
                             "/images/**", "/js/**", "/console/**", "/favicon.ico/**")
                     .permitAll()
                     .antMatchers("/facebook").hasAuthority(FACEBOOK.getRoleType())
@@ -42,13 +44,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                 .and()
                     .oauth2Login()
-                    .userInfoEndpoint().userService(new CustomOAuth2UserService())  // 네이버 USER INFO의 응답을 처리하기 위한 설정
+                    .userInfoEndpoint().userService(customOAuth2UserService)  // 네이버 USER INFO의 응답을 처리하기 위한 설정
                 .and()
                     .defaultSuccessUrl("/loginSuccess")
                     .failureUrl("/loginFailure")
                 .and()
+                	.logout()
+                	.logoutSuccessUrl("/")
+                .and()
                     .exceptionHandling()
-                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/test"));
     }
 
     @Bean

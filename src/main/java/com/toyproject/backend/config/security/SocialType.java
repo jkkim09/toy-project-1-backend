@@ -1,4 +1,4 @@
-package com.toyproject.backend.enums;
+package com.toyproject.backend.config.security;
 
 public enum SocialType {
     FACEBOOK("facebook"),
