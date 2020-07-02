@@ -17,11 +17,12 @@ public class OAuthAttributes {
     private String picture;
 
     @Builder
-    public OAuthAttributes(Map<String, Object> attributes
-            , String nameAttributeKey
-            , String name
-            , String email
-            , String picture) {
+    public OAuthAttributes(
+    		Map<String, Object> attributes, 
+    		String nameAttributeKey,
+    		String name,
+    		String email,
+    		String picture) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
@@ -71,7 +72,8 @@ public class OAuthAttributes {
     }
 
     public User toEntity() {
-    	System.out.println("toEntity");
+    	// todo role case 로 수정 필요
+    	System.out.println();
         return User.builder()
                 .name(name)
                 .email(email)
