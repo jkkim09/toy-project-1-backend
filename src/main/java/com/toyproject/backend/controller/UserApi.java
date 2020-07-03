@@ -58,6 +58,7 @@ public class UserApi {
 	@RequestMapping("/kakao")
 	public String kakao(Principal principal) {
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		System.out.println(user.toString());
 		return "kakao";
 	}
 	

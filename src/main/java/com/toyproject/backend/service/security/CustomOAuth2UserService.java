@@ -1,4 +1,4 @@
-package com.toyproject.backend.service;
+package com.toyproject.backend.service.security;
 
 import java.util.Collections;
 
