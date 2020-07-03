@@ -37,6 +37,7 @@ export default {
     },
     onSuccess: (data) => {
       console.log('onSuccess', data)
+      window.location.href = '/oauth2/authorization/kakao'
     },
     onFailure: (data) => {
       console.log('onFailure', data)

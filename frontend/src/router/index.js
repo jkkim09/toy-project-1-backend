@@ -9,6 +9,11 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      path: '/',
+      name: 'Login',
+      component: LoginPage
+    },
+    {
       path: '/view/index',
       name: 'Login',
       component: LoginPage
