@@ -24,9 +24,8 @@ public class UserApi {
 	@Autowired
 	UserRepository userRepository;
 	
-	@GetMapping({ "", "/" })
+	@GetMapping("/home")
 	public String getAuthorizationMessage() {
-		System.out.println(userRepository.findByEmail("gost203@naver.com"));
 		return "home";
 	}
 
@@ -38,7 +37,6 @@ public class UserApi {
 	@PreAuthorize("#oauth2.hasScope('member.info.public')")
 	@GetMapping({ "/loginSuccess", "/hello" })
 	public String loginSuccess(Principal principal) {
-		System.out.println("loginSuccess -->" + principal.toString());
 		return "loginSuccess";
 	}
 	
@@ -60,13 +58,11 @@ public class UserApi {
 	@RequestMapping("/kakao")
 	public String kakao(Principal principal) {
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
-		System.out.println("loginSuccess kakao --> " + principal.toString());
 		return "kakao";
 	}
 	
 	@RequestMapping("/naver")
 	public String naver(Principal principal) {
-		System.out.println("loginSuccess naver --> " + principal.toString());
 		return "naver";
 	}
 }

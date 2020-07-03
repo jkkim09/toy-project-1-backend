@@ -70,14 +70,13 @@ public class OAuthAttributes {
                 .build();
     }
 
-    public User toEntity() {
+    public User toEntity(String role) {
     	// todo role case 로 수정 필요
-    	System.out.println();
         return User.builder()
                 .name(name)
                 .email(email)
                 .picture(picture)
-                .role(SocialType.KAKAO)
+                .role(SocialType.valueOf(role.toUpperCase()))
                 .build();
     }
 }

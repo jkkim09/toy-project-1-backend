@@ -34,8 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                    .antMatchers("/", "/test", "/oauth2/**", "/login/**", "/css/**",
-                            "/images/**", "/js/**", "/console/**", "/favicon.ico/**")
+                    .antMatchers("/", "/view/**", "/resources/**", "/test", "/oauth2/**", "/login/**", "/css/**",
+                            "/images/**", "/js/**", "/view/**", "/console/**", "/favicon.ico/**")
                     .permitAll()
                     .antMatchers("/facebook").hasAuthority(FACEBOOK.getRoleType())
                     .antMatchers("/google").hasAuthority(GOOGLE.getRoleType())
@@ -44,9 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                 .and()
                     .oauth2Login()
-                    .userInfoEndpoint().userService(customOAuth2UserService)  // 네이버 USER INFO의 응답을 처리하기 위한 설정
+                    .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
-                    .defaultSuccessUrl("/loginSuccess")
+                    .defaultSuccessUrl("/view/main")
                     .failureUrl("/loginFailure")
                 .and()
                 	.logout()

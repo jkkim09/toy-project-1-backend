@@ -33,9 +33,7 @@ export default {
   },
   methods: {
     click: () => {
-      const key = '97cd7dd00e85b48757982d22b0ba4269'
-      const re = 'http://localhost:8083/api/user/login/kakao'
-      window.location.href = 'https://kauth.kakao.com/oauth/authorize?client_id=' + key + '&redirect_uri=' + re + '&response_type=code'
+      window.location.href = '/oauth2/authorization/kakao'
     },
     onSuccess: (data) => {
       console.log('onSuccess', data)
