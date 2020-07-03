@@ -21,7 +21,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import com.toyproject.backend.service.CustomOAuth2UserService;
+import com.toyproject.backend.service.security.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests()
+        httpSecurity.httpBasic().disable()
+        			.csrf().disable()
+        			.authorizeRequests()
                     .antMatchers("/", "/view/**", "/resources/**", "/test", "/oauth2/**", "/login/**", "/css/**",
                             "/images/**", "/js/**", "/view/**", "/console/**", "/favicon.ico/**")
                     .permitAll()
@@ -53,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 	.logoutSuccessUrl("/")
                 .and()
                     .exceptionHandling()
+                    .accessDeniedHandler(new CustomAccessDeniedHandler())
                     .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/test"));
     }
 
