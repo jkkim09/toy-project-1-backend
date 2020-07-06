@@ -35,3 +35,9 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+bootJar {
+    archiveBaseName = "springboot-start"
+    archiveFileName = "springboot-start.jar"
+    archiveVersion = "0.0.0"
+}
