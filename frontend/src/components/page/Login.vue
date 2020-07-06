@@ -11,6 +11,7 @@
                 :on-failure=onFailure
                 />
                 <div @click="click">test Click</div>
+                <div @click="test">test2 Click</div>
               </div>
             </td>
           </tr>
@@ -28,18 +29,23 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      Http: {},
+      name: 'test name'
     }
   },
   methods: {
-    click: () => {
-      window.location.href = '/oauth2/authorization/kakao'
+    click: function () {
+      // window.location.href = '/oauth2/authorization/kakao'
+      window.open('/oauth2/authorization/kakao')
     },
-    onSuccess: (data) => {
-      console.log('onSuccess', data)
-      window.location.href = '/oauth2/authorization/kakao'
+    test: function () {
+      window.location.href = '/kakao'
     },
-    onFailure: (data) => {
+    onSuccess: function (data) {
+      // window.location.href = '/oauth2/authorization/kakao'
+      console.log(data)
+    },
+    onFailure: function (data) {
       console.log('onFailure', data)
     }
   }

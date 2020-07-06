@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .failureUrl("/loginFailure")
                 .and()
                 	.logout()
-                	.logoutSuccessUrl("/")
+                	.logoutSuccessUrl("/view/index")
                 .and()
                     .exceptionHandling()
                     .accessDeniedHandler(new CustomAccessDeniedHandler())
