@@ -9,18 +9,24 @@ import org.springframework.web.servlet.ModelAndView;
 import com.toyproject.backend.dto.SessionUser;
 
 @RestController
-@RequestMapping("/view")
+@RequestMapping
 public class ViewController {
-	@RequestMapping("/index")
+	@RequestMapping({"/", "/view/index"})
 	public ModelAndView index (ModelAndView mv) {
 		mv.setViewName("index");
 		return mv;
 	}
 	
-	@RequestMapping("/main")
+	@RequestMapping("/view/main")
 	public ModelAndView main (ModelAndView mv, HttpSession hs) {
 		SessionUser user = (SessionUser) hs.getAttribute("user");
 		System.out.println(user.toString());
+		mv.setViewName("index");
+		return mv;
+	}
+	
+	@RequestMapping("/view/loginSuccess")
+	public ModelAndView loginSuccess (ModelAndView mv, HttpSession hs) {
 		mv.setViewName("index");
 		return mv;
 	}

@@ -5,13 +5,16 @@ import java.security.Principal;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.toyproject.backend.dto.SessionUser;
+import com.toyproject.backend.dto.response.ResponseDto;
 import com.toyproject.backend.repository.UserRepository;
+import com.toyproject.backend.service.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +24,9 @@ public class UserApi {
 	
 	private final HttpSession httpSession;
 
+	@Autowired
+	ResponseMessage responseMessage;
+	
 	@Autowired
 	UserRepository userRepository;
 	
@@ -50,16 +56,16 @@ public class UserApi {
 		return "loginFailure";
 	}
 	
-	@RequestMapping("/test")
-	public String test() {
-		return "error";
+	@RequestMapping("/errorLogic")
+	public ResponseEntity<ResponseDto> errorLogic() {
+		return responseMessage.getResponseMessage(400);
 	}
 	
 	@RequestMapping("/kakao")
-	public String kakao(Principal principal) {
+	public ResponseEntity<ResponseDto> kakao(Principal principal) {
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
-		System.out.println(user.toString());
-		return "kakao";
+//		System.out.println(user.toString());
+		return responseMessage.getResponseMessage(200, user);
 	}
 	
 	@RequestMapping("/naver")

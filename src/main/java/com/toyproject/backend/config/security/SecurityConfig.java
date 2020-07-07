@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.httpBasic().disable()
         			.csrf().disable()
         			.authorizeRequests()
-                    .antMatchers("/", "/view/**", "/resources/**", "/test", "/oauth2/**", "/login/**", "/css/**",
+                    .antMatchers("/", "/view/**", "/resources/**", "/errorLogic", "/oauth2/**", "/login/**", "/css/**",
                             "/images/**", "/js/**", "/view/**", "/console/**", "/favicon.ico/**")
                     .permitAll()
                     .antMatchers("/facebook").hasAuthority(FACEBOOK.getRoleType())
@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .oauth2Login()
                     .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
-                    .defaultSuccessUrl("/view/main")
+                    .defaultSuccessUrl("/view/loginSuccess")
                     .failureUrl("/loginFailure")
                 .and()
                 	.logout()
@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .exceptionHandling()
                     .accessDeniedHandler(new CustomAccessDeniedHandler())
-                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/test"));
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/errorLogic"));
     }
 
     @Bean

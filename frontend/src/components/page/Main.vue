@@ -16,15 +16,6 @@ export default {
     }
   },
   methods: {
-    click: () => {
-      window.location.href = '/oauth2/authorization/kakao'
-    },
-    onSuccess: (data) => {
-      console.log('onSuccess', data)
-    },
-    onFailure: (data) => {
-      console.log('onFailure', data)
-    }
   }
 }
 </script>
