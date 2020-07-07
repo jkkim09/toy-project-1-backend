@@ -17,7 +17,16 @@ export default {
   methods: {
     click: function () {
       console.log('webview post message')
-      window.postMessage('test web view')
+      
+      if (window.postMessage) {
+        alert('test1')
+        window.postMessage('test web view')
+      }
+
+      if (window.ReactNativeWebView) {
+        alert('test2')
+        window.ReactNativeWebView.postMessage('test web view')
+      }
     }
   },
   mounted () {
