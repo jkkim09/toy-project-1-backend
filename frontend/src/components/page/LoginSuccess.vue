@@ -1,6 +1,5 @@
 <template>
     <div id="main-page-loginSuccess">
-      <button @click="click">test</button>
     </div>
 </template>
 
@@ -15,32 +14,24 @@ export default {
     }
   },
   methods: {
-    click: function () {
-      console.log('webview post message')
-      
-      if (window.postMessage) {
-        alert('test1')
-        window.postMessage('test web view')
-      }
-
-      if (window.ReactNativeWebView) {
-        alert('test2')
-        window.ReactNativeWebView.postMessage('test web view')
-      }
-    }
   },
   mounted () {
     const res = {
       code: 200,
       messasge: 'LoginSuccess',
       data: {
-        token: 'testToKen'
+        token: 'ToKen'
       }
     }
-    console.log(window.opener)
+
     if (window.opener) {
       window.opener.postMessage(res, '*')
       window.close()
+    }
+
+    window.postMessage(res)
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(res)
     }
   }
 }
