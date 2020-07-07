@@ -1,5 +1,6 @@
 <template>
     <div id="main-page-loginSuccess">
+      <button @click="click">test</button>
     </div>
 </template>
 
@@ -14,6 +15,10 @@ export default {
     }
   },
   methods: {
+    click: function () {
+      console.log('webview post message')
+      window.postMessage('test web view')
+    }
   },
   mounted () {
     const res = {
@@ -23,8 +28,11 @@ export default {
         token: 'testToKen'
       }
     }
-    window.opener.postMessage(res, '*')
-    window.close()
+    console.log(window.opener)
+    if (window.opener) {
+      window.opener.postMessage(res, '*')
+      window.close()
+    }
   }
 }
 </script>
@@ -33,5 +41,10 @@ export default {
     #main-page-loginSuccess {
         width: 100%;
         height: 100%;
+    }
+
+    button {
+      width: 200px;
+      height: 50px;
     }
 </style>
