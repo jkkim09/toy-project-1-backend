@@ -36,17 +36,25 @@ public class User {
     @Column(nullable = false)
     private SocialType role;
 
+    private String accessToken;
+    
+    private String tokenType;
+    
     @Builder
-    public User(String name, String email, String picture, SocialType role) {
+    public User(String name, String email, String picture, SocialType role, String accessToken, String tokenType) {
         this.name = name;
         this.email = email;
         this.picture = picture;
         this.role = role;
+        this.accessToken = accessToken;
+        this.tokenType = tokenType;
     }
 
-    public User update(String name, String picture) {
+    public User update(String name, String picture, String accessToken, String tokenType) {
         this.name = name;
         this.picture = picture;
+        this.accessToken = accessToken;
+        this.tokenType = tokenType;
         return this;
     }
 

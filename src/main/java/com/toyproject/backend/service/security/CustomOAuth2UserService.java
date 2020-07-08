@@ -31,9 +31,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
-        System.out.println("kakao getTokenValue : " + userRequest.getAccessToken().getTokenValue());
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
+        
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails()
                 .getUserInfoEndpoint()
@@ -42,7 +41,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes.of(
                         registrationId
                         , userNameAttributeName
-                        , oAuth2User.getAttributes());
+                        , oAuth2User.getAttributes(),
+                        userRequest.getAccessToken());
 
         User user  = saveOrUpdate(attributes, registrationId);
 
@@ -58,8 +58,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes, String roleName) {
         User user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> entity.update(
-                        attributes.getName()
-                        , attributes.getPicture())
+                        attributes.getName(),
+                        attributes.getPicture(),
+                        attributes.getAccessToken(),
+                        attributes.getTokenType())
                 ).orElse(attributes.toEntity(roleName));
 
         return userRepository.save(user);
