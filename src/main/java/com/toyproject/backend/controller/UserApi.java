@@ -5,8 +5,8 @@ import java.security.Principal;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,26 +30,6 @@ public class UserApi {
 	@Autowired
 	UserRepository userRepository;
 	
-	@GetMapping("/home")
-	public String getAuthorizationMessage() {
-		return "home";
-	}
-
-	@GetMapping("/login")
-	public String login() {
-		return "login";
-	}
-
-	@PreAuthorize("#oauth2.hasScope('member.info.public')")
-	@GetMapping({ "/loginSuccess", "/hello" })
-	public String loginSuccess(Principal principal) {
-		return "loginSuccess";
-	}
-	
-	@GetMapping("/hello")
-	public String hello() {
-		return "hello";
-	}
 
 	@GetMapping("/loginFailure")
 	public String loginFailure() {
@@ -64,8 +44,12 @@ public class UserApi {
 	@RequestMapping("/kakao")
 	public ResponseEntity<ResponseDto> kakao(Principal principal) {
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
-//		System.out.println(user.toString());
-		return responseMessage.getResponseMessage(200, user);
+		System.out.println(httpSession.getAttribute("user"));
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("X-RateLimit-Limit", "1000");
+		responseHeaders.set("X-RateLimit-Remaining", "500");
+		responseHeaders.set("X-RateLimit-Reset", "1457020923");
+		return responseMessage.getResponseMessage(200, responseHeaders, user);
 	}
 	
 	@RequestMapping("/naver")

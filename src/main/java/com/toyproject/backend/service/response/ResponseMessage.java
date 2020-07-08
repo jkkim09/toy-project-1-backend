@@ -2,6 +2,7 @@ package com.toyproject.backend.service.response;
 
 import java.util.HashMap;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,15 @@ public class ResponseMessage {
 		rDto.setMessage((String) codeAndMessage.get("message"));
 		rDto.setData(data);
 		return new ResponseEntity<ResponseDto>(rDto, (HttpStatus) codeAndMessage.get("http"));
+	}
+	
+	public ResponseEntity<ResponseDto> getResponseMessage (int code, HttpHeaders header, Object data) {
+		HashMap<String, Object> codeAndMessage = select(code);
+		rDto = new ResponseDto();
+		rDto.setCode((int) codeAndMessage.get("code"));
+		rDto.setMessage((String) codeAndMessage.get("message"));
+		rDto.setData(data);
+		return new ResponseEntity<ResponseDto>(rDto, header, (HttpStatus) codeAndMessage.get("http"));
 	}
 	
 	public HashMap<String, Object> select (int code) {
