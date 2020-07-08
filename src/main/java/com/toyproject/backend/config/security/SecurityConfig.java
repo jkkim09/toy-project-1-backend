@@ -21,7 +21,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import com.toyproject.backend.service.CustomOAuth2UserService;
+import com.toyproject.backend.service.security.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,27 +33,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests()
-                    .antMatchers("/", "/test", "/oauth2/**", "/login/**", "/css/**",
-                            "/images/**", "/js/**", "/console/**", "/favicon.ico/**")
+        httpSecurity.httpBasic().disable()
+        			.csrf().disable()
+        			.authorizeRequests()
+                    .antMatchers("/", "/view/**", "/resources/**", "/errorLogic", "/oauth2/**", "/login/**", "/css/**",
+                            "/images/**", "/js/**", "/view/**", "/console/**", "/favicon.ico/**")
                     .permitAll()
                     .antMatchers("/facebook").hasAuthority(FACEBOOK.getRoleType())
                     .antMatchers("/google").hasAuthority(GOOGLE.getRoleType())
                     .antMatchers("/kakao").hasAuthority(KAKAO.getRoleType())
                     .antMatchers("/naver").hasAuthority(NAVER.getRoleType())
+                    .antMatchers("/api/**").hasAnyAuthority(KAKAO.getRoleType(), NAVER.getRoleType())
                     .anyRequest().authenticated()
                 .and()
                     .oauth2Login()
-                    .userInfoEndpoint().userService(customOAuth2UserService)  // 네이버 USER INFO의 응답을 처리하기 위한 설정
+                    .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
-                    .defaultSuccessUrl("/loginSuccess")
+                    .defaultSuccessUrl("/view/loginSuccess")
                     .failureUrl("/loginFailure")
                 .and()
                 	.logout()
-                	.logoutSuccessUrl("/")
+                	.logoutSuccessUrl("/view/index")
                 .and()
                     .exceptionHandling()
-                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/test"));
+                    .accessDeniedHandler(new CustomAccessDeniedHandler())
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/errorLogic"));
     }
 
     @Bean
