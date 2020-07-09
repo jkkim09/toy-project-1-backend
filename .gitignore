@@ -52,3 +52,6 @@ selenium-debug.log
 *.ntvs*
 *.njsproj
 *.sln
+
+## back end ##
+src/main/generated
