@@ -1,5 +1,7 @@
 package com.toyproject.backend.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,8 +15,10 @@ import com.toyproject.backend.config.security.SocialType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class User {
@@ -36,10 +40,15 @@ public class User {
     @Column(nullable = false)
     private SocialType role;
 
+    @Column
     private String accessToken;
     
+    @Column
     private String tokenType;
     
+    @Column(nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    public Timestamp joinData;
+
     @Builder
     public User(String name, String email, String picture, SocialType role, String accessToken, String tokenType) {
         this.name = name;
