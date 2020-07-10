@@ -5,10 +5,8 @@ import java.sql.Timestamp;
 import com.toyproject.backend.entity.MediaContents;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class MediaContentsDto {
 	private long mediaId;
 	
