@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.toyproject.backend.dto.response.ResponseDto;
+import com.toyproject.backend.enums.ResponseEnum;
 
 @Service
 public class ResponseMessage {

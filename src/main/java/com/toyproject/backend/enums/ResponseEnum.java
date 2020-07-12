@@ -1,4 +1,4 @@
-package com.toyproject.backend.service.response;
+package com.toyproject.backend.enums;
 
 import java.util.HashMap;
 
