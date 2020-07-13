@@ -74,4 +74,12 @@ public class MediaContentsController {
 	public void awsImgUpdate(@RequestParam("file") MultipartFile[] files, String bucketKey) throws IOException {
 		awsService.uploadMultipartFile(files, "/jktest");
 	}
+
+	@RequestMapping("/aws")
+	public void testAws() {
+		for (int i = 0; i<10; i++) {
+			awsService.uploadFileData();			
+		}
+	}
+	
 }
