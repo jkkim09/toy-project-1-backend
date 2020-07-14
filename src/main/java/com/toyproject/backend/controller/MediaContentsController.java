@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toyproject.backend.dto.MediaContentsDto;
+import com.toyproject.backend.dto.SessionUser;
 import com.toyproject.backend.dto.response.ResponseDto;
 import com.toyproject.backend.entity.MediaContents;
 import com.toyproject.backend.service.AwsService;
@@ -27,6 +31,9 @@ import com.toyproject.backend.service.response.ResponseMessage;
 @RequestMapping("/api/media")
 public class MediaContentsController {
 
+	@Value("${aws.cloudfront.domain}")
+	private String cloudFrontDomain;
+	
 	@Autowired
 	MediaService mediaService;
 	
@@ -55,6 +62,9 @@ public class MediaContentsController {
 			
 			for (MediaContents media : mediaList) {
 				ObjectMapper oMapper = new ObjectMapper();
+				
+				media.setMediaUrl(cloudFrontDomain + media.getMediaUrl());
+				
 				@SuppressWarnings("unchecked")
 				HashMap<String, Object> map = oMapper.convertValue(new MediaContentsDto(media), HashMap.class);
 				reList.add(map);
@@ -71,15 +81,14 @@ public class MediaContentsController {
 	}
 	
 	@RequestMapping(value="/aws/imageUpload", method=RequestMethod.POST)
-	public void awsImgUpdate(@RequestParam("file") MultipartFile[] files, String bucketKey) throws IOException {
-		awsService.uploadMultipartFile(files, "/jktest");
-	}
-
-	@RequestMapping("/aws")
-	public void testAws() {
-		for (int i = 0; i<10; i++) {
-			awsService.uploadFileData();			
-		}
+	public ResponseEntity<ResponseDto> awsImgUpdate(@RequestParam("file") MultipartFile[] files, HttpSession httpSession, String mediaType) throws IOException {
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		awsService.uploadMultipartFile(files, mediaType, user);
+		return responseMessage.getResponseMessage(200);
 	}
 	
+	@RequestMapping("/user/{userNumber}/{mediaType}")
+	public ResponseEntity<ResponseDto> getUserTypeImages(@PathVariable long userNumber, @PathVariable String mediaType) {
+		return responseMessage.getResponseMessage(200, mediaService.getUserTypeImages(userNumber, mediaType));
+	}
 }

@@ -12,4 +12,6 @@ public interface MediaContentsRepository extends JpaRepository<MediaContents, Lo
 	ArrayList<MediaContents> findByUserOrderByMediaUploadDataDesc(User user);
 	MediaContents findByMediaId(long number);
 	ArrayList<MediaContents> findByMediaType(String type);
+	MediaContents findByMediaUrl(String mediaUrl);
+	ArrayList<MediaContents> findByUserAndMediaType(User user, String mediaType);
 }
